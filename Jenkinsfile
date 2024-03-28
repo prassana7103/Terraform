@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/prassana7103/Terraform.git'
+                git branch: 'main', url: 'https://github.com/prassana7103/Terraform.git'
             }
         }
 
@@ -30,6 +30,21 @@ pipeline {
                 sh 'terraform apply -auto-approve tfplan'
             }
         }
-    }
+        
+        stage('Delay before Destroy') {
+            steps {
+                script {
+                    echo 'Waiting for 5 minutes before destroying resources...'
+                    sleep time: 300, unit: 'SECONDS'  // Add a delay of 5 minutes (300 seconds)
+                }
+            }
+        }
 
+        stage('Terraform Destroy') {
+            steps {
+                sh 'terraform destroy -auto-approve'
+            }
+        }
+    }
 }
+    
